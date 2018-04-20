@@ -11,8 +11,8 @@ app.get("/", (req, res) => {
 
 });
 
-app.listen(process.env.port || 50000, function() {
+app.listen(process.env.PORT || 50000, function() {
 
-    console.log("Server listening on port " + (process.env.port || 50000));
+    console.log("Server listening on port " + (process.env.PORT || 50000));
 
 });
