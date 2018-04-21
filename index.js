@@ -1,18 +1,18 @@
 "use strict";
 
 const express       = require('express');
-const githubApp     = require('github-app');
-const githubHandler = require('github-webhook-handler');
+const createApp     = require('github-app');
+const createHandler = require('github-webhook-handler');
 
 var app = express();
 
-var github = githubApp({
+var githubApp = createApp({
     id: process.env.APP_ID,
     cert: process.env.BOT_PK || require('fs').readFileSync('private-key.pem')
 });
 
 // Middleware for handling Github Webhooks
-var handler = githubHandler({
+var handler = createHandler({
     path: '/',
     secret: process.env.WEBHOOK_SECRET
 });
