@@ -6,6 +6,11 @@ const githubHandler = require('github-webhook-handler');
 
 var app = express();
 
+var github = githubApp({
+    id: process.env.APP_ID,
+    cert: process.env.BOT_PK || require('fs').readFileSync('private-key.pem')
+});
+
 // Middleware for handling Github Webhooks
 var handler = githubHandler({
     path: '/',
@@ -30,7 +35,21 @@ handler.on('issue_comment', event => {
 
         // TODO: user must be approved to work in the project
 
-        console.log("Assigning to user");
+        var installId = event.payload.installation.id;
+        githubApp.asInstallation(installId).then(github => {
+
+            // TODO: assign issue
+
+            // Comment on issue
+            github.issues.createComment({
+                owner:  event.payload.repository.owner.login,
+                repo:   event.payload.repository.name,
+                number: event.payload.issue.id,
+
+                message: "Assigned issue to user @" + event.payload.comment.user.login
+            });
+
+        });
 
     }
 
