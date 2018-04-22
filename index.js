@@ -53,6 +53,14 @@ handler.on('issue_comment', async (event) => {
 
             // TODO: user must be approved to work in the project
 
+            // Assign to user and leave comment.
+            await github.issues.addAssigneesToIssue({
+                owner:     event.payload.repository.owner.login,
+                repo:      event.payload.repository.name,
+                number:    event.payload.issue.number,   
+                assignees: [event.payload.comment.user.login]
+            });
+
             await github.issues.createComment({
                 owner:  event.payload.repository.owner.login,
                 repo:   event.payload.repository.name,
