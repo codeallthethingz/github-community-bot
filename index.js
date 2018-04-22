@@ -51,7 +51,27 @@ handler.on('issue_comment', async (event) => {
 
             }
 
-            // TODO: user must be approved to work in the project
+            // User must be approved to work in the project
+            try {
+                await github.repos.checkCollaborator({
+                    owner:    event.payload.repository.owner.login,
+                    repo:     event.payload.repository.name,
+                    username: event.payload.comment.user.login
+                });
+            }
+            catch (error) {
+
+                await github.issues.createComment({
+                    owner:  event.payload.repository.owner.login,
+                    repo:   event.payload.repository.name,
+                    number: event.payload.issue.number,
+                    body:   "You must be a collaborator to assign this issue to \
+                            yourself. Please contact the repository owner to get access."
+                });
+
+                return;
+
+            }
 
             // Assign to user and leave comment.
             await github.issues.addAssigneesToIssue({
