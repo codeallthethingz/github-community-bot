@@ -31,12 +31,27 @@ handler.on('issue_comment', async (event) => {
     // User requests issue assignment using the '/assign to me' command
     if (event.payload.comment.body == '/assign to me') {
 
-        // TODO: issue must be triaged before assigning
-
-        // TODO: user must be approved to work in the project
-
         try {
             let github = await githubApp.asInstallation(event.payload.installation.id);
+
+            // Issue must be triaged before assigning
+            let labels = event.payload.issue.labels;
+            labels = labels.filter(labelObj => labelObj.name == "triaged");
+            if (labels.length != 1) {
+
+                await github.issues.createComment({
+                    owner:  event.payload.repository.owner.login,
+                    repo:   event.payload.repository.name,
+                    number: event.payload.issue.number,
+                    body:   "Issue must be triaged before assignment. Please contact the \
+                            repository owner."
+                });
+
+                return;
+
+            }
+
+            // TODO: user must be approved to work in the project
 
             await github.issues.createComment({
                 owner:  event.payload.repository.owner.login,
