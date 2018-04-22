@@ -20,7 +20,7 @@ var handler = createHandler({
 handler.on('issue_comment', event => {
 
     console.log("Got issue_comment");
-    console.log(event);
+    // console.log(event);
 
     // Only respond if comment was created or edited
     var action = event.payload.action;
@@ -44,12 +44,13 @@ handler.on('issue_comment', event => {
             github.issues.createComment({
                 owner:  event.payload.repository.owner.login,
                 repo:   event.payload.repository.name,
-                number: event.payload.issue.id,
-
-                message: "Assigned issue to user @" + event.payload.comment.user.login
+                number: event.payload.issue.number,
+                body:   "Assigned issue to user @" + event.payload.comment.user.login
+            }).catch(reason => {
+                console.log(reason);
             });
 
-        });
+        })
 
     }
 
