@@ -4,20 +4,20 @@ const express       = require('express');
 const createApp     = require('github-app');
 const createHandler = require('github-webhook-handler');
 
-var app = express();
+const app = express();
 
-var githubApp = createApp({
+const githubApp = createApp({
     id: process.env.APP_ID,
     cert: process.env.BOT_PK || require('fs').readFileSync('private-key.pem')
 });
 
 // Middleware for handling Github Webhooks
-var handler = createHandler({
+const handler = createHandler({
     path: '/',
     secret: process.env.WEBHOOK_SECRET
 });
 
-handler.on('issue_comment', event => {
+handler.on('issue_comment', async (event) => {
 
     console.log("Got issue_comment");
     // console.log(event);
@@ -35,23 +35,20 @@ handler.on('issue_comment', event => {
 
         // TODO: user must be approved to work in the project
 
-        var installId = event.payload.installation.id;
-        githubApp.asInstallation(installId).then(github => {
+        try {
+            let github = await githubApp.asInstallation(event.payload.installation.id);
 
-            // TODO: assign issue
-
-            // Comment on issue
-            github.issues.createComment({
+            await github.issues.createComment({
                 owner:  event.payload.repository.owner.login,
                 repo:   event.payload.repository.name,
                 number: event.payload.issue.number,
                 body:   "Assigned issue to user @" + event.payload.comment.user.login
-            }).catch(reason => {
-                console.log(reason);
             });
-
-        })
-
+        }
+        catch (error) {
+            console.error(error);
+        }
+        
     }
 
 });
