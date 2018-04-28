@@ -1,4 +1,5 @@
-# github-community-bot
+# github-community-bot ![Build Status](https://travis-ci.org/battlesnakeio/github-community-bot.svg?branch=master)
+
 Github bot for assisting with the battlesnake development process.
 
 
